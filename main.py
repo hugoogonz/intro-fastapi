@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 
 app = FastAPI()
 
@@ -18,7 +19,7 @@ movies = [
 
 @app.get('/', tags=['home'])
 async def root():
-    return 'Hi from FastAPI'
+    return HTMLResponse('<h1>Hi from FastAPI!</>')
 
 
 @app.get('/movies', tags=['movies'])
