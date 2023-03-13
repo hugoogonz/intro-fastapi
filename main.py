@@ -13,15 +13,15 @@ movies = [
 		"overview": "En un exuberante planeta llamado Pandora viven los Na'vi, seres que ...",
 		"year": "2009",
 		"rating": 7.8,
-		"category": "Acción"
+		"category": "Accion"
 	},
     {
 		"id": 2,
-		"title": "Avatar",
-		"overview": "En un exuberante planeta llamado Pandora viven los Na'vi, seres que ...",
+		"title": "Lalaland",
+		"overview": "Mia & Sebastian...",
 		"year": "2016",
-		"rating": 8.8,
-		"category": "Acción"
+		"rating": 10,
+		"category": "Romantico"
 	}
 ]
 
@@ -34,7 +34,7 @@ async def root():
 async def get_movies():
     return movies
 
-
+# http://127.0.0.1:5000/movies/2
 @app.get('/movies/{id}', tags=['movies'])
 async def get_movie_by_id(id: int):
     for item in movies:
@@ -43,15 +43,7 @@ async def get_movie_by_id(id: int):
          
     return {"message": "Movie not found"}
 
-
-	
-
-
-# def search_movie(id):
-#     movie = list(filter(lambda item: item['id'] == id, movies))
-
-# 	try:
-# 		return movie[0]
-# 	except:
-# 		return {"message": "Movie not found"}
-
+# http://127.0.0.1:5000/movies/?category=Romantico
+@app.get('/movies/', tags=['movies'])
+async def get_movie_by_category(category: str):
+    return list(filter(lambda item: item['category'] == category, movies))
