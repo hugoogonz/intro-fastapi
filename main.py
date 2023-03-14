@@ -51,7 +51,7 @@ async def get_movie_by_category(category: str):
 	
 
 @app.post('/movies', tags=['movies'])
-def create_movie(id: int = Body(), title: str = Body(), overview:str = Body(), year:int = Body(), rating: float = Body(), category: str = Body()):
+async def create_movie(id: int = Body(), title: str = Body(), overview:str = Body(), year:int = Body(), rating: float = Body(), category: str = Body()):
     movies.append({
         "id": id,
         "title": title,
@@ -61,3 +61,21 @@ def create_movie(id: int = Body(), title: str = Body(), overview:str = Body(), y
         "category": category
     })
     return movies
+
+@app.put('/movies/{id}', tags=['movies'])
+async def update_movie(id: int, title: str = Body(), overview:str = Body(), year:int = Body(), rating: float = Body(), category: str = Body()):
+	for item in movies:
+		if item["id"] == id:
+			item['title'] = title,
+			item['overview'] = overview,
+			item['year'] = year,
+			item['rating'] = rating,
+			item['category'] = category
+			return movies
+
+@app.delete('/movies/{id}', tags=['movies'])
+async def delete_movie(id: int):
+    for item in movies:
+        if item["id"] == id:
+            movies.remove(item)
+            return movies
