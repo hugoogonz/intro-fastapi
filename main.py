@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Body
 from fastapi.responses import HTMLResponse
 
 app = FastAPI()
@@ -43,7 +43,21 @@ async def get_movie_by_id(id: int):
          
     return {"message": "Movie not found"}
 
+
 # http://127.0.0.1:5000/movies/?category=Romantico
 @app.get('/movies/', tags=['movies'])
 async def get_movie_by_category(category: str):
     return list(filter(lambda item: item['category'] == category, movies))
+	
+
+@app.post('/movies', tags=['movies'])
+def create_movie(id: int = Body(), title: str = Body(), overview:str = Body(), year:int = Body(), rating: float = Body(), category: str = Body()):
+    movies.append({
+        "id": id,
+        "title": title,
+        "overview": overview,
+        "year": year,
+        "rating": rating,
+        "category": category
+    })
+    return movies
