@@ -13,12 +13,24 @@ app.version = "0.0.1"
 
 class Movie(BaseModel):
     id: Optional[int] = None  # campo opcional
-    title: str = Field(default="Mi pelicula", min_length=5,
-                       max_length=15)  # campo maximo de 15 digitos
+    title: str = Field(min_length=5, max_length=15)  # campo maximo de 15 digitos
     overview: str = Field(min_length=15, max_length=50)
     year: int = Field(le=2025) # menor a 2025
     rating:float = Field(default=10, ge=1, le=10)
-    category:str = Field(default='Categoría', min_length=5, max_length=15)
+    category:str = Field(default='Categoria', min_length=5, max_length=15)
+    
+	# Clase donde añado una propiedad llamada schema_extra
+	class Config:
+        schema_extra = {
+            "example": {
+                "id": 1,
+                "title": "Avatar",
+                "overview": "En un exuberante planeta llamado Pandora viven los Na'vi, seres que...",
+                "year": "2009",
+       	 		"rating": 7.8,
+        		"category": "Accion"
+			}
+		}
 
 
 movies = [
@@ -27,16 +39,16 @@ movies = [
         "title": "Avatar",
         "overview": "En un exuberante planeta llamado Pandora viven los Na'vi, seres que ...",
         "year": "2009",
-                "rating": 7.8,
-                "category": "Accion"
+        "rating": 7.8,
+        "category": "Accion"
     },
     {
         "id": 2,
         "title": "Lalaland",
         "overview": "Mia & Sebastian...",
         "year": "2016",
-                "rating": 10,
-                "category": "Romantico"
+        "rating": 10,
+        "category": "Romantico"
     }
 ]
 
