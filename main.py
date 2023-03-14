@@ -1,10 +1,21 @@
 from fastapi import FastAPI, Body
 from fastapi.responses import HTMLResponse
 
+# me permite crear el esquema de datos
+from pydantic import BaseModel, Optional
+
 app = FastAPI()
 
 app.title = "Mi aplicación con  FastAPI"
 app.version = "0.0.1"
+
+class Movie(BaseModel):
+     id: Optional[int] = None # campo opcional
+     title: str
+     overview: str
+     year: int
+     rating: float
+     category: str
 
 movies = [
     {
@@ -51,28 +62,24 @@ async def get_movie_by_category(category: str):
 	
 
 @app.post('/movies', tags=['movies'])
-async def create_movie(id: int = Body(), title: str = Body(), overview:str = Body(), year:int = Body(), rating: float = Body(), category: str = Body()):
-    movies.append({
-        "id": id,
-        "title": title,
-        "overview": overview,
-        "year": year,
-        "rating": rating,
-        "category": category
-    })
+async def create_movie(movie: Movie):
+    movies.append(movie)
     return movies
 
 @app.put('/movies/{id}', tags=['movies'])
-async def update_movie(id: int, title: str = Body(), overview:str = Body(), year:int = Body(), rating: float = Body(), category: str = Body()):
+async def update_movie(id: int, movie: Movie):
 	for item in movies:
 		if item["id"] == id:
-			item['title'] = title,
-			item['overview'] = overview,
-			item['year'] = year,
-			item['rating'] = rating,
-			item['category'] = category
-			return movies
+			item['title'] = movie.title
+	 		item['overview'] = movie.overview
+	 		item['year'] = movie.year
+	 		item['rating'] = movie.rating
+	 		item['category'] = movie.category
+	 		return movies
 
+            
+
+# http://127.0.0.1:5000/movies/2
 @app.delete('/movies/{id}', tags=['movies'])
 async def delete_movie(id: int):
     for item in movies:
