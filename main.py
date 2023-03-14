@@ -34,7 +34,7 @@ async def root():
 async def get_movies():
     return movies
 
-# http://127.0.0.1:5000/movies/2
+# http://localhost:5000/movies/2
 @app.get('/movies/{id}', tags=['movies'])
 async def get_movie_by_id(id: int):
     for item in movies:
@@ -44,7 +44,7 @@ async def get_movie_by_id(id: int):
     return {"message": "Movie not found"}
 
 
-# http://127.0.0.1:5000/movies/?category=Romantico
+# http://localhost:5000/movies/?category=Romantico
 @app.get('/movies/', tags=['movies'])
 async def get_movie_by_category(category: str):
     return list(filter(lambda item: item['category'] == category, movies))
@@ -73,6 +73,7 @@ async def update_movie(id: int, title: str = Body(), overview:str = Body(), year
 			item['category'] = category
 			return movies
 
+# http://localhost:5000/movies/2
 @app.delete('/movies/{id}', tags=['movies'])
 async def delete_movie(id: int):
     for item in movies:
