@@ -68,21 +68,22 @@ async def get_movies():
 async def get_movie_by_id(id: int = Path(ge=1, le=2000)):
     for item in movies:
         if item['id'] == id:
-            return item
+            return JSONResponse(content=item)
 
-    return {"message": "Movie not found"}
+    return JSONResponse(content={"message": "Movie not found"})
 
 
 # http://127.0.0.1:5000/movies/?category=Romantico
 @app.get('/movies/', tags=['movies'])
 async def get_movie_by_category(category: str = Query(min_length=5, max_length=15)):
-    return list(filter(lambda item: item['category'] == category, movies))
+    data = list(filter(lambda item: item['category'] == category, movies))
+    return JSONResponse(content=data)
 
 
 @app.post('/movies', tags=['movies'])
 async def create_movie(movie: Movie):
     movies.append(movie)
-    return movies
+    return JSONResponse(content={"message": "The movie was saved successfully."})
 
 
 @app.put('/movies/{id}', tags=['movies'])
