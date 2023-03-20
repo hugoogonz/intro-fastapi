@@ -1,5 +1,6 @@
-from fastapi import FastAPI, Body
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, Body, Path, Query
+# JSONResponse me permite enviar contenido en formato JSON hacia el cliente
+from fastapi.responses import HTMLResponse, JSONResponse
 
 # me permite crear el esquema de datos
 from pydantic import BaseModel, Field
@@ -20,7 +21,7 @@ class Movie(BaseModel):
     category:str = Field(default='Categoria', min_length=5, max_length=15)
     
 	# Clase donde añado una propiedad llamada schema_extra
-	class Config:
+    class Config:
         schema_extra = {
             "example": {
                 "id": 1,
@@ -60,13 +61,11 @@ async def root():
 
 @app.get('/movies', tags=['movies'])
 async def get_movies():
-    return movies
+    return JSONResponse(content=movies)  # retorna un contenido de movies en formato JSON
 
 # http://127.0.0.1:5000/movies/2
-
-
 @app.get('/movies/{id}', tags=['movies'])
-async def get_movie_by_id(id: int):
+async def get_movie_by_id(id: int = Path(ge=1, le=2000)):
     for item in movies:
         if item['id'] == id:
             return item
@@ -76,7 +75,7 @@ async def get_movie_by_id(id: int):
 
 # http://127.0.0.1:5000/movies/?category=Romantico
 @app.get('/movies/', tags=['movies'])
-async def get_movie_by_category(category: str):
+async def get_movie_by_category(category: str = Query(min_length=5, max_length=15)):
     return list(filter(lambda item: item['category'] == category, movies))
 
 
