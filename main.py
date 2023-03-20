@@ -6,10 +6,17 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel, Field
 from typing import Optional, List
 
+from jwtmanager import create_token
+
 app = FastAPI()
 
 app.title = "Mi aplicación con FastAPI"
 app.version = "0.0.1"
+
+# Modelo que me permita añadir info al usuario
+class User(BaseModel):
+    email: str = Field(min_length=5, max_length=15)
+    password: str = Field(min_length=5, max_length=15)
 
 
 class Movie(BaseModel):
@@ -58,6 +65,13 @@ movies = [
 async def root():
     return HTMLResponse('<h1>Hi from FastAPI!</>')
 
+@app.post('/login', tags=['auth'])
+async def login(user: User):
+    if user.email == "admin@admin.com" and user.password == "admin12345":
+        token: str = create_token(user.dict())
+        return JSONResponse(status_code=200, content=token)
+
+
 # response_model=List[Movie] -> indicamos que devolvemos una Lista de tipo Movie
 @app.get('/movies', tags=['movies'], response_model=List[Movie], status_code=200)
 # la func retorna una Lista de tipo Movie
@@ -85,7 +99,7 @@ async def get_movie_by_category(category: str = Query(min_length=5, max_length=1
 @app.post('/movies', tags=['movies'], response_model=dict, status_code=201)
 async def create_movie(movie: Movie):
     movies.append(movie)
-    return JSONResponse(content={"message": "The movie was saved successfully."}, status_code=201)
+    return JSONResponse(status_code=201, content={"message": "The movie was saved successfully."})
 
 # response_model=dict -> la respuesta sera un diccionario
 @app.put('/movies/{id}', tags=['movies'], response_model=dict, status_code=200)
@@ -97,7 +111,7 @@ async def update_movie(id: int, movie: Movie) -> dict: # la funcion devolvera un
             item['year'] = movie.year
             item['rating'] = movie.rating
             item['category'] = movie.category
-            return JSONResponse(content={"message": "The movie has been modified."}, status_code=200)
+            return JSONResponse(status_code=200, content={"message": "The movie has been modified."})
 
 
 # http://127.0.0.1:5000/movies/2
@@ -106,4 +120,4 @@ async def delete_movie(id: int) -> dict:
     for item in movies:
         if item["id"] == id:
             movies.remove(item)
-            return JSONResponse(content={"message": "The movie has been removed."}, status_code=200)
+            return JSONResponse(status_code=200, content={"message": "The movie has been removed."})
