@@ -59,18 +59,20 @@ async def root():
     return HTMLResponse('<h1>Hi from FastAPI!</>')
 
 # response_model=List[Movie] -> indicamos que devolvemos una Lista de tipo Movie
-@app.get('/movies', tags=['movies'], response_model=List[Movie])
-async def get_movies() -> List[Movie]: # la func retorna una Lista de tipo Movie
-    return JSONResponse(content=movies)  # retorna un contenido de movies en formato JSON
+@app.get('/movies', tags=['movies'], response_model=List[Movie], status_code=200)
+# la func retorna una Lista de tipo Movie
+async def get_movies() -> List[Movie]:
+    # retorna un contenido de movies en formato JSON
+    return JSONResponse(content=movies, status_code=200)  
 
 # http://127.0.0.1:5000/movies/2
-@app.get('/movies/{id}', tags=['movies'], response_model=Movie)
+@app.get('/movies/{id}', tags=['movies'], response_model=Movie, status_code=200)
 async def get_movie_by_id(id: int = Path(ge=1, le=2000)) -> Movie:
     for item in movies:
         if item['id'] == id:
             return JSONResponse(content=item)
 
-    return JSONResponse(content={"message": "Movie not found"})
+    return JSONResponse(content={"message": "Movie not found"}, status_code=200)
 
 
 # http://127.0.0.1:5000/movies/?category=Romantico
@@ -80,13 +82,13 @@ async def get_movie_by_category(category: str = Query(min_length=5, max_length=1
     return JSONResponse(content=data)
 
 
-@app.post('/movies', tags=['movies'], response_model=dict)
+@app.post('/movies', tags=['movies'], response_model=dict, status_code=201)
 async def create_movie(movie: Movie):
     movies.append(movie)
-    return JSONResponse(content={"message": "The movie was saved successfully."})
+    return JSONResponse(content={"message": "The movie was saved successfully."}, status_code=201)
 
 # response_model=dict -> la respuesta sera un diccionario
-@app.put('/movies/{id}', tags=['movies'], response_model=dict)
+@app.put('/movies/{id}', tags=['movies'], response_model=dict, status_code=200)
 async def update_movie(id: int, movie: Movie) -> dict: # la funcion devolvera un diccionario 
     for item in movies:
         if item["id"] == id:
@@ -95,13 +97,13 @@ async def update_movie(id: int, movie: Movie) -> dict: # la funcion devolvera un
             item['year'] = movie.year
             item['rating'] = movie.rating
             item['category'] = movie.category
-            return JSONResponse(content={"message": "The movie has been modified."})
+            return JSONResponse(content={"message": "The movie has been modified."}, status_code=200)
 
 
 # http://127.0.0.1:5000/movies/2
-@app.delete('/movies/{id}', tags=['movies'], response_model=dict)
+@app.delete('/movies/{id}', tags=['movies'], response_model=dict, status_code=200)
 async def delete_movie(id: int) -> dict:
     for item in movies:
         if item["id"] == id:
             movies.remove(item)
-            return JSONResponse(content={"message": "The movie has been removed."})
+            return JSONResponse(content={"message": "The movie has been removed."}, status_code=200)
