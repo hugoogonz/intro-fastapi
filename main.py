@@ -70,9 +70,9 @@ async def get_movies() -> List[Movie]:
 async def get_movie_by_id(id: int = Path(ge=1, le=2000)) -> Movie:
     for item in movies:
         if item['id'] == id:
-            return JSONResponse(content=item)
+            return JSONResponse(content=item, status_code=200)
 
-    return JSONResponse(content={"message": "Movie not found"}, status_code=200)
+    return JSONResponse(content={"message": "Movie not found"}, status_code=404)
 
 
 # http://127.0.0.1:5000/movies/?category=Romantico
