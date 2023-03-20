@@ -95,7 +95,7 @@ async def update_movie(id: int, movie: Movie):
             item['year'] = movie.year
             item['rating'] = movie.rating
             item['category'] = movie.category
-            return movies
+            return JSONResponse(content={"message": "The movie has been modified."})
 
 
 # http://127.0.0.1:5000/movies/2
@@ -104,4 +104,4 @@ async def delete_movie(id: int):
     for item in movies:
         if item["id"] == id:
             movies.remove(item)
-            return movies
+            return JSONResponse(content={"message": "The movie has been removed."})
