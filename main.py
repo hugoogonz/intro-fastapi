@@ -4,7 +4,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 
 # me permite crear el esquema de datos
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
 
 app = FastAPI()
 
@@ -58,14 +58,14 @@ movies = [
 async def root():
     return HTMLResponse('<h1>Hi from FastAPI!</>')
 
-
-@app.get('/movies', tags=['movies'])
-async def get_movies():
+# response_model=List[Movie] -> indicamos que devolvemos una Lista de tipo Movie
+@app.get('/movies', tags=['movies'], response_model=List[Movie])
+async def get_movies() -> List[Movie]: # la func retorna una Lista de tipo Movie
     return JSONResponse(content=movies)  # retorna un contenido de movies en formato JSON
 
 # http://127.0.0.1:5000/movies/2
-@app.get('/movies/{id}', tags=['movies'])
-async def get_movie_by_id(id: int = Path(ge=1, le=2000)):
+@app.get('/movies/{id}', tags=['movies'], response_model=Movie)
+async def get_movie_by_id(id: int = Path(ge=1, le=2000)) -> Movie:
     for item in movies:
         if item['id'] == id:
             return JSONResponse(content=item)
@@ -74,20 +74,20 @@ async def get_movie_by_id(id: int = Path(ge=1, le=2000)):
 
 
 # http://127.0.0.1:5000/movies/?category=Romantico
-@app.get('/movies/', tags=['movies'])
-async def get_movie_by_category(category: str = Query(min_length=5, max_length=15)):
+@app.get('/movies/', tags=['movies'], response_model=List[Movie])
+async def get_movie_by_category(category: str = Query(min_length=5, max_length=15)) -> List[Movie]:
     data = list(filter(lambda item: item['category'] == category, movies))
     return JSONResponse(content=data)
 
 
-@app.post('/movies', tags=['movies'])
+@app.post('/movies', tags=['movies'], response_model=dict)
 async def create_movie(movie: Movie):
     movies.append(movie)
     return JSONResponse(content={"message": "The movie was saved successfully."})
 
-
-@app.put('/movies/{id}', tags=['movies'])
-async def update_movie(id: int, movie: Movie):
+# response_model=dict -> la respuesta sera un diccionario
+@app.put('/movies/{id}', tags=['movies'], response_model=dict)
+async def update_movie(id: int, movie: Movie) -> dict: # la funcion devolvera un diccionario 
     for item in movies:
         if item["id"] == id:
             item['title'] = movie.title
@@ -99,8 +99,8 @@ async def update_movie(id: int, movie: Movie):
 
 
 # http://127.0.0.1:5000/movies/2
-@app.delete('/movies/{id}', tags=['movies'])
-async def delete_movie(id: int):
+@app.delete('/movies/{id}', tags=['movies'], response_model=dict)
+async def delete_movie(id: int) -> dict:
     for item in movies:
         if item["id"] == id:
             movies.remove(item)
