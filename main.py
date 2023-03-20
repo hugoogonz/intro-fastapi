@@ -81,7 +81,7 @@ async def get_movie_by_category(category: str = Query(min_length=5, max_length=1
 
 
 @app.post('/movies', tags=['movies'], response_model=dict)
-async def create_movie(movie: Movie):
+async def create_movie(movie: Movie) -> dict:
     movies.append(movie)
     return JSONResponse(content={"message": "The movie was saved successfully."})
 
