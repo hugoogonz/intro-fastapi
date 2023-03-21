@@ -1,17 +1,26 @@
-from fastapi import FastAPI, Body, Path, Query
+from fastapi import Depends, FastAPI, Body, HTTPException, Path, Query, Request
 # JSONResponse me permite enviar contenido en formato JSON hacia el cliente
 from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.security import HTTPBearer
 
 # me permite crear el esquema de datos
 from pydantic import BaseModel, Field
 from typing import Optional, List
 
-from jwtmanager import create_token
+from jwtmanager import create_token, validate_token
 
 app = FastAPI()
 
 app.title = "Mi aplicación con FastAPI"
 app.version = "0.0.1"
+
+
+class JWTBearer(HTTPBearer):
+    async def __call__(self, request: Request):
+        auth = await super().__call__(request)
+        data = validate_token(auth.credentials)
+        if data['email'] != "admin@admin.com":
+            raise HTTPException(status_code=403, detail="The credentials are invalid")
 
 # Modelo que me permita añadir info al usuario
 class User(BaseModel):
@@ -73,7 +82,7 @@ async def login(user: User):
 
 
 # response_model=List[Movie] -> indicamos que devolvemos una Lista de tipo Movie
-@app.get('/movies', tags=['movies'], response_model=List[Movie], status_code=200)
+@app.get('/movies', tags=['movies'], response_model=List[Movie], status_code=200, dependencies=[Depends(JWTBearer)])
 # la func retorna una Lista de tipo Movie
 async def get_movies() -> List[Movie]:
     # retorna un contenido de movies en formato JSON
